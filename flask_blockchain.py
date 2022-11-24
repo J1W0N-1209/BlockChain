@@ -40,6 +40,7 @@ class Blockchain:
       block = chain[block_index]
       if block['previous_hash'] != self.hash(previous_block):
         return False
+      previous_proof = previous_block['proof']
 # blockchain = Blockchain()
 # previous_block = blockchain.get_previous_block()
 # previous_proof = previous_block['proof']
