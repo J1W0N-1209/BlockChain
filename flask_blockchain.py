@@ -32,11 +32,21 @@ class Blockchain:
   def hash(self,block):
     encoded_block = json.dumps(block,sort_keys=True).encode()
     return hashlib.sha256(encoded_block).hexdigest()
+  def is_valid_chain(self,chain):
+    previous_block = chain[0]
+    block_index = 1
 
-blockchain = Blockchain()
-previous_block = blockchain.get_previous_block()
-previous_proof = previous_block['proof']
-proof = blockchain.proof_of_work(previous_proof)
-previous_hash = blockchain.hash(previous_block)
-block = blockchain.create_block(proof,previous_hash)
-print(blockchain.chain)
+    while block_index < len(chain):
+      block = chain[block_index]
+      if block['previous_hash'] != self.hash(previous_block):
+        return False
+# blockchain = Blockchain()
+# previous_block = blockchain.get_previous_block()
+# previous_proof = previous_block['proof']
+# proof = blockchain.proof_of_work(previous_proof)
+# previous_hash = blockchain.hash(previous_block)
+# block = blockchain.create_block(proof,previous_hash)
+# print(blockchain.chain)
+
+
+
