@@ -1,6 +1,7 @@
 import datetime 
 import hashlib
 import json
+from flask import Flask,jsonify
 
 class Blockchain:
   def __init__(self):
@@ -42,13 +43,39 @@ class Blockchain:
         return False
       previous_proof = previous_block['proof']
       proof = block['proof']
-# blockchain = Blockchain()
-# previous_block = blockchain.get_previous_block()
-# previous_proof = previous_block['proof']
-# proof = blockchain.proof_of_work(previous_proof)
-# previous_hash = blockchain.hash(previous_block)
-# block = blockchain.create_block(proof,previous_hash)
-# print(blockchain.chain)
+      hash_operation = hashlib.sha256(str(proof ** 2 - previous_proof ** 2).encode()).hexdigest()
+
+      if not hash_operation.startswith('0000'):
+        return False
+      previous_block = block
+      block_index += 1
+    return True
+
+app = Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+blockchain = Blockchain()
+
+@app.route('/mine_block',methods = ['GET'])
+def mine_block():
+  previous_block = blockchain.get_previous_block()
+  previous_proof = previous_block['proof']
+  proof = blockchain.proof_of_work(previous_proof)
+  previous_hash = blockchain.hash(previous_block)
+  block = blockchain.create_block(proof,previous_hash)
+  responeses = {
+    'message' : 'Congratulations, you just mined a block!',
+    **block
+  }
+  return jsonify(responeses),200
+
+@app.route('/get_chain',methods=['GET'])
+def get_chain():
+  response = {
+    'chain' : blockchain.chain,
+    'length' : len(blockchain.chain)
+  }
+  return jsonify(response),200
+app.run(port = 5000)
 
 
 
